@@ -26,10 +26,14 @@ jobs:
 
       - name: Create MySQL Database
         run: |
-          mysql -u root -e "CREATE DATABASE IF NOT EXISTS testdb;"
-          mysql -u root -e "CREATE USER 'dbuser'@'localhost' IDENTIFIED BY 'dbpassword';"
-          mysql -u root -e "GRANT ALL PRIVILEGES ON testdb.* TO 'dbuser'@'localhost';"
-          mysql -u root -e "FLUSH PRIVILEGES;"
+          sudo service mysql stop
+          sudo mysqld --skip-grant-tables &
+          sleep 5
+          mysql -e "CREATE DATABASE IF NOT EXISTS testdb;"
+          mysql -e "USE mysql; UPDATE user SET authentication_string=PASSWORD(''), plugin='mysql_native_password' WHERE User='root'; FLUSH PRIVILEGES;"
+          sudo service mysql stop
+          sudo service mysql start
+          mysql -u root -e "GRANT ALL PRIVILEGES ON testdb.* TO 'root'@'localhost'; FLUSH PRIVILEGES;"
       
 
       - name: Set up PHP and WP-CLI
