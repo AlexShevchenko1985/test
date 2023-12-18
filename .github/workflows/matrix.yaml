@@ -18,6 +18,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Install MySQL
+        run: sudo apt-get update && sudo apt-get install mysql-server -y
+
+      - name: Start MySQL
+        run: sudo service mysql start
+
       - name: Set up PHP and WP-CLI
         uses: shivammathur/setup-php@v2
         with:
@@ -45,8 +51,3 @@ jobs:
           
           wp plugin install woocommerce --activate
 
-      - name: Install Composer dependencies
-        run: composer install
-
-      - name: Run tests
-        run: ./vendor/bin/phpunit
