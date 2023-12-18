@@ -1,0 +1,37 @@
+name: WordPress and PHP Matrix Testing
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        wordpress_version: [6.4, 6.3, 6.2, 6.1]
+        php_version: [8.3, 8.2, 8.1, 8.0]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_version }}
+          extensions: mbstring, zip, intl
+
+      - name: Set up WordPress
+        run: |
+          wget -O wordpress.tar.gz https://wordpress.org/latest.tar.gz
+          tar -xzvf wordpress.tar.gz
+          mv wordpress/* .
+
+      - name: Install Composer dependencies
+        run: composer install
+
+      - name: Run tests
+        run: ./vendor/bin/phpunit
