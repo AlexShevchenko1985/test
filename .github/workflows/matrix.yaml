@@ -11,8 +11,8 @@ jobs:
 
     strategy:
       matrix:
-        wordpress_version: [5.8, 5.7, 5.6, 5.5]
-        php_version: [8.0, 7.4, 7.3, 7.2]
+        wordpress_version: [6.4, 6.3, 6.2, 6.1]
+        php_version: [8.3, 8.2, 8.1, 8.0]
 
     steps:
       - name: Checkout repository
@@ -36,7 +36,7 @@ jobs:
           tar -xzvf wordpress.tar.gz
           mv wordpress/* .
 
-          wp core config --dbname=testdb --dbuser=root --dbpass=root --dbhost=localhost --extra-php <<PHP
+          wp core config --dbname=testdb --dbuser=root --dbpass=root --dbhost=localhost --dbsocket=/var/run/mysqld/mysqld.sock --extra-php <<PHP
           define('WP_DEBUG', true);
           define('WP_DEBUG_LOG', true);
           PHP
@@ -44,3 +44,9 @@ jobs:
           wp core install --url=http://localhost --title=Test --admin_user=admin --admin_password=admin --admin_email=admin@example.com
           
           wp plugin install woocommerce --activate
+
+      - name: Install Composer dependencies
+        run: composer install
+
+      - name: Run tests
+        run: ./vendor/bin/phpunit
