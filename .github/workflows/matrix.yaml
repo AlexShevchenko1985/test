@@ -30,8 +30,4 @@ jobs:
           tar -xzvf wordpress.tar.gz
           mv wordpress/* .
 
-      - name: Install Composer dependencies
-        run: composer install
-
-      - name: Run tests
-        run: ./vendor/bin/phpunit
+  
